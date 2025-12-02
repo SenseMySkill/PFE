@@ -1,0 +1,184 @@
+16. Przygotowanie prezentacji (co dodać)
+
+Punkt do wykonania: Zrób slajdy — co umieścić i w jakiej kolejności (skrótowo):
+
+Slajd 1: Tytuł + cel (pokazać dyfuzję barwnika w wodzie).
+
+Slajd 2: Intuicja dyfuzji (co się dzieje fizycznie).
+
+Slajd 3: Prawo Ficka + równanie (
+∂c/∂t=D∇2c
+∂c/∂t=D∇
+2
+c).
+
+Slajd 4: Jak dyskretyzujemy (wzór dyskretny Laplasjanu).
+
+Slajd 5: Fragment kodu (inicjalizacja + krok).
+
+Slajd 6: Animacja / GIF (wstaw klatkę lub link).
+
+Slajd 7: Wyniki eksperymentów (zmiana D itp.).
+
+Slajd 8: Wnioski + ewentualne błędy/ograniczenia.
+
+
+
+
+Sure! Let’s break down your Python code, the libraries, the diffusion model it implements, and what the results show.
+
+1. Python Libraries Used
+
+numpy
+
+Provides fast numerical operations on arrays and matrices.
+
+Used here to create the simulation grid u, calculate distances for circular drops, and perform array arithmetic efficiently.
+
+matplotlib.pyplot
+
+Used for plotting and visualizing data.
+
+imshow displays the 2D concentration field.
+
+colorbar shows a legend for the concentration values.
+
+matplotlib.animation.FuncAnimation
+
+Creates an animated visualization of the diffusion process.
+
+Repeatedly calls the update function, updating the concentration grid and redrawing it in the figure.
+
+2. Diffusion Model
+
+The simulation models 2D diffusion of a dye in water using the explicit finite difference method:
+
+Diffusion Equation
+
+The continuous diffusion equation in 2D is:
+
+∂u∂t=D(∂2u∂x2+∂2u∂y2)
+∂t
+∂u
+	​
+
+=D(
+∂x
+2
+∂
+2
+u
+	​
+
++
+∂y
+2
+∂
+2
+u
+	​
+
+)
+
+Where:
+
+u(x,y,t)
+u(x,y,t) = concentration of dye
+
+D
+D = diffusion coefficient
+
+t
+t = time
+
+Numerical Implementation
+
+Grid:
+
+A 200x200 array u represents the concentration field.
+
+dx and dy are the spatial steps.
+
+Laplacian (spatial derivative):
+
+lap[i,j] = (u[i+1,j] + u[i-1,j] + u[i,j+1] + u[i,j-1] - 4*u[i,j]) / (dx*dx)
+
+
+Computes the second derivatives in x and y directions.
+
+Describes how concentration flows to/from neighboring cells.
+
+Explicit Time Step:
+
+u_new = u + D * dt * lap
+
+
+Updates the concentration over a small time dt.
+
+Simulates diffusion over time.
+
+Neumann Boundary Conditions:
+
+u_new[0, :] = u_new[1, :]
+u_new[-1, :] = u_new[-2, :]
+u_new[:, 0] = u_new[:, 1]
+u_new[:, -1] = u_new[:, -2]
+
+
+Keeps the concentration at the edges equal to the nearest inner value.
+
+Simulates no flux at boundaries, i.e., dye does not leak outside.
+
+3. Drop Placement
+
+add_drop(row, col, radius) creates a circular dye drop at the clicked position.
+
+Uses a mask to select points within a radius:
+
+(X−col)2+(Y−row)2≤radius2
+(X−col)
+2
++(Y−row)
+2
+≤radius
+2
+
+Sets those points to 1.0 (maximum concentration).
+
+The click coordinates are mapped to grid indices with event.ydata, event.xdata.
+
+4. Animation
+
+The update function is called for each frame:
+
+It computes the new concentration u using step_explicit.
+
+Updates the displayed image with im.set_data(u).
+
+Initially, the animation is paused with ani.event_source.stop().
+
+Clicking on the figure adds a drop and starts the animation, showing dye spreading in water.
+
+5. Results
+
+You get a 2D animated map where:
+
+Blue background represents water with zero concentration.
+
+Pink (or high value in cool colormap) represents dye.
+
+When you click, a circular drop appears, then gradually spreads out due to diffusion.
+
+Over time, the dye smoothly disperses, showing the natural mixing effect of diffusion.
+
+💡 Key Insights from the Simulation:
+
+Diffusion is isotropic: the drop spreads equally in all directions.
+
+Larger D → faster spreading; smaller dt → more stable simulation.
+
+Circular drops are more realistic than rectangular ones.
+
+Boundary conditions affect behavior near the edges: Neumann keeps dye inside.
+
+If you want, I can also modify the code to make the dye pink and water background blue, for a more visually realistic effect.
